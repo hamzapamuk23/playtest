@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Playtest</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #F4EFE7; }
+  body { display: flex; align-items: center; justify-content: center; font: 16px sans-serif; color: #5B5148; }
+</style>
+</head>
+<body>
+<p id="status"></p>
+<script>
+  // Pages serves this file (as gh-pages/404.html) for every missing path of the site. A build folder is deleted by
+  // the next deploy of its branch, so an old build address (a home screen shortcut keeps one) lands here. Below a
+  // branch folder (/playtest/<slug>/<something>) it goes to the launcher at /playtest/<slug>/, which opens the newest
+  // build. Anything else goes to the branch list at /playtest/. Neither target is missing in the normal case, and the
+  // list always exists, so this cannot loop.
+  var parts = location.pathname.split('/');  // ['', 'playtest', '<slug>', '<sha7>', 'index.html']
+  var safe = /^[A-Za-z0-9_-]+$/;
+  if (parts.length > 1 && safe.test(parts[1])) {
+    var root = '/' + parts[1] + '/';
+    var inBranchFolder = parts.length > 3 && parts[3] !== '' && safe.test(parts[2]);
+    location.replace(inBranchFolder ? root + parts[2] + '/' : root);
+  } else {
+    document.getElementById('status').textContent = 'Page not found';
+  }
+</script>
+</body>
+</html>
