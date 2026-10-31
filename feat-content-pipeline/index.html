@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Playtest</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #F4EFE7; }
+  body { display: flex; align-items: center; justify-content: center; font: 16px sans-serif; color: #5B5148; }
+</style>
+</head>
+<body>
+<p id="status"></p>
+<script>
+  // Pages serves files with a 10 minute cache. This page is tiny and never changes; latest.json is read without the
+  // cache and names the folder of the newest build.
+  fetch('latest.json', {cache: 'no-store'})
+    .then(function (response) {
+      if (!response.ok) { throw new Error('HTTP ' + response.status); }
+      return response.json();
+    })
+    .then(function (info) { location.replace(info.build + '/index.html'); })
+    .catch(function () { document.getElementById('status').textContent = 'Build not found'; });
+</script>
+</body>
+</html>
