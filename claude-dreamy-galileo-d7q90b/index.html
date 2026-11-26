@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Playtest</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #F4EFE7; }
+  body { display: flex; align-items: center; justify-content: center; font: 16px sans-serif; color: #5B5148; }
+  #links { display: none; text-align: center; }
+  #links a { display: block; margin: 16px; color: #5B5148; }
+  #apk { font-size: 14px; }
+</style>
+</head>
+<body>
+<p id="status"></p>
+<div id="links">
+  <a id="game" href="#">Play in the browser</a>
+  <a id="apk" href="oyug-test.apk">Android APK</a>
+</div>
+<script>
+  // Pages serves files with a 10 minute cache. This page is tiny and never changes; latest.json is read without the
+  // cache and names the folder of the newest build. On an Android phone, when this folder also has the Android test
+  // app (oyug-test.apk), the page stays and offers both; everywhere else it goes straight to the web build.
+  function showLinks(game) {
+    document.getElementById('game').href = game;
+    document.getElementById('links').style.display = 'block';
+  }
+  fetch('latest.json', {cache: 'no-store'})
+    .then(function (response) {
+      if (!response.ok) { throw new Error('HTTP ' + response.status); }
+      return response.json();
+    })
+    .then(function (info) {
+      var game = info.build + '/index.html';
+      if (!/Android/i.test(navigator.userAgent)) { location.replace(game); return; }
+      return fetch('oyug-test.apk', {method: 'HEAD', cache: 'no-store'})
+        .then(function (response) { return response.ok; }, function () { return false; })
+        .then(function (hasApk) {
+          if (hasApk) { showLinks(game); } else { location.replace(game); }
+        });
+    })
+    .catch(function () { document.getElementById('status').textContent = 'Build not found'; });
+</script>
+</body>
+</html>
